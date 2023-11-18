@@ -41,11 +41,14 @@ jobs:
       - name: Rename @kakushin -> @kakushindev on GitHub registry
         run: |
           if [[ "${{ matrix.registry }}" == "https://npm.pkg.github.com/" ]]; then
-            if [[ $(cat package.json | jq .name) =~ '@kakushin/' ]]; then
-                $name = cat package.json | jq .name | sed -r 's/.{11}//;s/.$//'
-                cat package.json | jq .name = "@kakushindev/$name" > package.json.tmp
-                mv package.json.tmp package.json
-            fi
+            for file in `find . -name 'package.json' -type f`
+            do
+                if [[ $(cat $file | jq .name) =~ '@kakushin/' ]]; then
+                    $name = $(cat $file | jq .name | sed -r 's/.{11}//;s/.$//')
+                    cat $file | jq .name = "@kakushindev/$name" > `$file`.tmp
+                    mv `$file`.tmp $file
+                fi
+            done
           fi
 
       - name: Publish package to npm and GitHub packages registry
