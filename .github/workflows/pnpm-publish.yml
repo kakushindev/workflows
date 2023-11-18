@@ -40,6 +40,7 @@ jobs:
 
       - name: Rename @kakushin -> @kakushindev on GitHub registry
         run: |
+          #!/bin/bash
           if [[ "${{ matrix.registry }}" == "https://npm.pkg.github.com/" ]]; then
             for file in `find . -name 'package.json' -type f`
             do
