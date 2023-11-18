@@ -1,4 +1,4 @@
-name: Publish to NPM and GitHub registry
+name: Publish to NPM registry
 
 on:
   workflow_call:
@@ -11,8 +11,7 @@ jobs:
         include:
           - registry: https://registry.npmjs.org/
             token_secret_key: NPM_TOKEN
-          - registry: https://npm.pkg.github.com/
-            token_secret_key: GITHUB_TOKEN
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -37,20 +36,6 @@ jobs:
 
       - name: Compile/Build TypeScript project if present
         run: pnpm run --if-present build 
-
-      - name: Rename @kakushin -> @kakushindev on GitHub registry
-        run: |
-          #!/bin/bash
-          if [[ "${{ matrix.registry }}" == "https://npm.pkg.github.com/" ]]; then
-            for file in `find . -name 'package.json' -type f`
-            do
-                if [[ $(cat $file | jq .name) =~ '@kakushin/' ]]; then
-                    $name = $(cat $file | jq .name | sed -r 's/.{11}//;s/.$//')
-                    cat $file | jq .name = "@kakushindev/$name" > `$file`.tmp
-                    mv `$file`.tmp $file
-                fi
-            done
-          fi
 
       - name: Publish package to npm and GitHub packages registry
         run: pnpm run release --registry ${{ matrix.registry }}
