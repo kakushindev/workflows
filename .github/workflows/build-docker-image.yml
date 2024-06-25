@@ -13,6 +13,11 @@ on:
         type: boolean
         required: false
         default: false
+      PLATFORMS:
+        description: "Docker image platforms"
+        type: string
+        required: false
+        default: "linux/amd64,linux/arm64/v8"
     secrets:
       BOT_TOKEN:
         required: true
@@ -73,6 +78,7 @@ jobs:
         with:
           context: ./
           tags: ${{ steps.img_meta.outputs.tags }}
+          platforms: ${{ inputs.PLATFORMS }}
           labels: ${{ steps.img_meta.outputs.labels }}
           push: ${{ github.event_name != 'pull_request' }}
           secrets: |
